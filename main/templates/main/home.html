@@ -1,0 +1,13 @@
+{% extends "main/base.html" %}
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1 class="mb-4">🍎 Добро пожаловать на сайт XE-калькулятора</h1>
+    <p class="lead mb-4">
+        Этот сервис поможет вам точно рассчитать количество хлебных единиц в пище и подобрать дозу инсулина.
+    </p>
+    <a href="{% url 'calculator' %}" class="btn btn-primary btn-lg m-2">Перейти к калькулятору</a>
+    <a href="{% url 'product_list' %}" class="btn btn-outline-secondary btn-lg m-2">Справочник продуктов</a>
+</div>
+{% endblock %}
