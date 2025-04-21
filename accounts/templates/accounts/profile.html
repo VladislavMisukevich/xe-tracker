@@ -1,0 +1,10 @@
+{% extends "main/base.html" %}
+{% block title %}Личный кабинет{% endblock %}
+{% block content %}
+<h2>👤 Личный кабинет</h2>
+<p>Привет, {{ user.username }}!</p>
+<form method="post" action="{% url 'logout' %}">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-outline-danger">🚪 Выйти</button>
+</form>
+{% endblock %}
