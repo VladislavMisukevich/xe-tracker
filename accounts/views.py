@@ -9,7 +9,7 @@ def register(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('home')  # замени на нужный путь
+            return redirect('home')  # или куда тебе нужно
     else:
         form = CustomUserCreationForm()
     return render(request, 'accounts/register.html', {'form': form})

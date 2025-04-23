@@ -3,22 +3,23 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
 class CustomUserCreationForm(UserCreationForm):
-    username = forms.CharField(
-        label="Имя пользователя",
-        help_text="",
-        widget=forms.TextInput(attrs={'class': 'form-control'})
-    )
-    password1 = forms.CharField(
-        label="Пароль",
-        help_text="",
-        widget=forms.PasswordInput(attrs={'class': 'form-control'})
-    )
-    password2 = forms.CharField(
-        label="Повторите пароль",
-        help_text="",
-        widget=forms.PasswordInput(attrs={'class': 'form-control'})
-    )
+    email = forms.EmailField(required=True, label="Электронная почта")
 
     class Meta:
         model = User
-        fields = ('username',)
+        fields = ("username", "email", "password1", "password2")
+        labels = {
+            "username": "Имя пользователя",
+            "password1": "Пароль",
+            "password2": "Подтверждение пароля",
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].label = "Имя пользователя"
+        self.fields['password1'].label = "Пароль"
+        self.fields['password2'].label = "Подтверждение пароля"
+        for field_name in self.fields:
+            field = self.fields[field_name]
+            field.widget.attrs['class'] = 'form-control'
+            field.label_suffix = ''  # убирает двоеточие после label
