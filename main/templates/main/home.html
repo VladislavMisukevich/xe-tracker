@@ -2,12 +2,21 @@
 {% block title %}Главная{% endblock %}
 
 {% block content %}
-<div class="text-center">
-    <h1 class="mb-4">🍎 Добро пожаловать на сайт XE-калькулятора</h1>
+<div class="card p-5 shadow-sm text-center">
+    <h1 class="mb-4">🍎 Добро пожаловать в XE-Калькулятор</h1>
+
     <p class="lead mb-4">
-        Этот сервис поможет вам точно рассчитать количество хлебных единиц в пище и подобрать дозу инсулина.
+        Наш сервис помогает людям с диабетом <strong>удобно рассчитывать хлебные единицы</strong> и
+        <strong>определять дозу инсулина</strong> по потреблённым продуктам.
     </p>
-    <a href="{% url 'calculator' %}" class="btn btn-primary btn-lg m-2">Перейти к калькулятору</a>
-    <a href="{% url 'product_list' %}" class="btn btn-outline-secondary btn-lg m-2">Справочник продуктов</a>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+        <a href="{% url 'calculator' %}" class="btn btn-primary btn-lg px-4">
+            🧮 Калькулятор
+        </a>
+        <a href="{% url 'product_list' %}" class="btn btn-outline-secondary btn-lg px-4">
+            📘 Справочник продуктов
+        </a>
+    </div>
 </div>
 {% endblock %}

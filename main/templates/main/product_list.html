@@ -1,62 +1,53 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Справочник продуктов</title>
-</head>
-<body>
-   {% extends "main/base.html" %}
+{% extends "main/base.html" %}
+{% block title %}Справочник продуктов{% endblock %}
 
-    {% block title %}Справочник продуктов{% endblock %}
+{% block content %}
+<div class="card p-4 shadow-sm">
+    <h1 class="mb-4">📘 Справочник продуктов</h1>
 
-    {% block content %}
-    <div class="card p-4">
-        <h1 class="mb-4">Справочник продуктов</h1>
-
-        <form method="get" class="row g-2 mb-4">
-            <div class="col-md-6">
-                <input type="text" name="q" placeholder="Поиск продукта..." value="{{ request.GET.q }}" class="form-control">
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-outline-primary">Найти</button>
-            </div>
-            {% if request.GET.q %}
-            <div class="col-md-2">
-                <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">Сбросить</a>
-            </div>
-            {% endif %}
-        </form>
-
-        <div class="mb-3">
-            <strong>Сортировать по:</strong>
-            <a href="?sort=name{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">А-Я</a> |
-            <a href="?sort=-name{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Я-А</a> |
-            <a href="?sort=carbs{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">углеводы ↑</a> |
-            <a href="?sort=-carbs{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">углеводы ↓</a>
+    <form method="get" class="row g-2 mb-4">
+        <div class="col-md-6">
+            <input type="text" name="q" placeholder="Поиск продукта..." value="{{ request.GET.q }}" class="form-control">
         </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-outline-primary">🔍 Найти</button>
+        </div>
+        {% if request.GET.q %}
+        <div class="col-md-2">
+            <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">✖ Сбросить</a>
+        </div>
+        {% endif %}
+    </form>
 
-        <table class="table table-hover table-striped table-bordered table-rounded">
-            <thead>
-                <tr>
-                    <th>Название</th>
-                    <th>Углеводы на 100 г</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for product in products %}
-                    <tr>
-                        <td>{{ product.name }}</td>
-                        <td>{{ product.carbs_per_100g }}</td>
-                    </tr>
-                {% empty %}
-                    <tr><td colspan="2">Ничего не найдено</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="mb-3">
+        <strong>Сортировка:</strong>
+        <a href="?sort=name{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">А-Я</a> |
+        <a href="?sort=-name{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Я-А</a> |
+        <a href="?sort=carbs{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Углеводы ↑</a> |
+        <a href="?sort=-carbs{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Углеводы ↓</a>
     </div>
 
-    <p class="mt-3"><a href="/">← Назад к калькулятору</a></p>
-    {% endblock %}
+    <table class="table table-hover table-striped table-bordered table-rounded">
+        <thead class="table-light">
+            <tr>
+                <th>Название</th>
+                <th>Углеводы (на 100 г)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.carbs_per_100g }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2" class="text-center text-muted">Ничего не найдено</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-</body>
-</html>
+    <p class="mt-3"><a href="{% url 'calculator' %}">← Вернуться к калькулятору</a></p>
+</div>
+{% endblock %}
