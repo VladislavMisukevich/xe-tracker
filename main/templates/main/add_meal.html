@@ -1,0 +1,14 @@
+{% extends 'main/base.html' %}
+{% block title %}Добавить приём пищи{% endblock %}
+
+{% block content %}
+<div class="card p-4">
+  <h1 class="mb-4">🍽️ Добавить приём пищи</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+    <a href="{% url 'meal_calendar' %}" class="btn btn-outline-secondary ms-2">Назад</a>
+  </form>
+</div>
+{% endblock %}

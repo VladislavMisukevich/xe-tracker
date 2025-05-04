@@ -1,0 +1,52 @@
+{% extends 'main/base.html' %}
+{% load custom_tags %}
+{% block content %}
+<div class="card p-4">
+  <h2>{{ month_name }} {{ year }}</h2>
+  <div>
+    <a href="?month={{ month|add:"-1" }}&year={{ year }}">←</a>
+    <a href="?month={{ month|add:"1" }}&year={{ year }}">→</a>
+  </div>
+
+  <!-- Заголовки дней недели -->
+  <div class="row row-cols-7 border text-center mt-3">
+    {% for day in weekdays %}
+      <div class="col fw-bold">{{ day }}</div>
+    {% endfor %}
+  </div>
+
+  <!-- Календарные недели -->
+  {% for week in calendar_weeks %}
+    <div class="row row-cols-7 border text-center">
+      {% for date in week %}
+        <div class="col border py-2" style="min-height: 80px; cursor: pointer;" onclick="loadMeals('{{ date }}')">
+          <div class="{% if date.month != month %}text-muted{% endif %}">{{ date.day }}</div>
+          {% if date in meals_by_date %}
+            <div class="badge bg-primary">{{ meals_by_date|dict_get:date|length }} приём(а)</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+</div>
+
+<!-- Модальное окно или div для отображения приёмов -->
+<div id="meal-details" class="mt-4"></div>
+
+<script>
+  function loadMeals(date) {
+    fetch(`/api/meals/?date=${date}`)
+      .then(response => response.json())
+      .then(data => {
+        let container = document.getElementById("meal-details");
+        if (data.length === 0) {
+          container.innerHTML = `<p>Нет приёмов пищи на ${date}.</p>`;
+        } else {
+          container.innerHTML = `<h4>Приёмы пищи на ${date}:</h4><ul>` +
+            data.map(meal => `<li>${meal.product_name} — ${meal.weight} г</li>`).join("") +
+            "</ul>";
+        }
+      });
+  }
+</script>
+{% endblock %}

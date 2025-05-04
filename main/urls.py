@@ -1,14 +1,14 @@
 from django.urls import path
-from .views import (
-    home_view,
-    calculator_view,
-    product_list_view,
-    about_view,
-)
+from . import views
 
 urlpatterns = [
-    path('', home_view, name='home'),  # Главная страница
-    path('calculator/', calculator_view, name='calculator'),  # Калькулятор ХЕ
-    path('products/', product_list_view, name='product_list'),  # Справочник продуктов
-    path('about/', about_view, name='about'),  # О проекте
+    path('', views.home_view, name='home'),
+    path('calculator/', views.calculator_view, name='calculator'),
+    path('products/', views.product_list_view, name='product_list'),
+    path('about/', views.about_view, name='about'),
+    path('calendar/', views.meal_calendar_view, name='meal_calendar'),
+    path('calendar/add/', views.add_meal_view, name='add_meal'),
+    path('calendar/custom/', views.custom_calendar_view, name='custom_calendar'),
+    path('api/meals/', views.meals_on_date, name='meals_on_date'),
 ]
+

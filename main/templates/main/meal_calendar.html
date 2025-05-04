@@ -1,0 +1,47 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Календарь приёмов пищи{% endblock %}
+
+{% block extra_head %}
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="card p-4">
+  <h2 class="mb-3">📅 Календарь приёмов пищи</h2>
+  <div id="calendar"></div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const calendarEl = document.getElementById('calendar');
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'ru',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,listWeek'
+        },
+        events: {{ meals_json|safe }},
+        dateClick: function (info) {
+          const date = info.dateStr;
+          const events = calendar.getEvents().filter(event => event.startStr === date);
+          let text = `Приёмы пищи на ${date}:\n\n`;
+          if (events.length > 0) {
+            events.forEach(e => {
+              text += `• ${e.title}\n`;
+            });
+          } else {
+            text += 'Нет данных.';
+          }
+          alert(text);
+        }
+      });
+      calendar.render();
+    });
+  </script>
+{% endblock %}
