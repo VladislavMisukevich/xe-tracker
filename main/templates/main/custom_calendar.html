@@ -1,37 +1,55 @@
 {% extends 'main/base.html' %}
 {% load custom_tags %}
+{% load custom_filters %}
+
 {% block content %}
 <div class="card p-4">
   <h2>{{ month_name }} {{ year }}</h2>
-  <div>
-    <a href="?month={{ month|add:"-1" }}&year={{ year }}">←</a>
-    <a href="?month={{ month|add:"1" }}&year={{ year }}">→</a>
+  <div class="mb-3">
+    <a href="?month={{ month|add:"-1" }}&year={{ year }}">← Предыдущий</a> |
+    <a href="?month={{ month|add:"1" }}&year={{ year }}">Следующий →</a>
   </div>
 
-  <!-- Заголовки дней недели -->
-  <div class="row row-cols-7 border text-center mt-3">
-    {% for day in weekdays %}
-      <div class="col fw-bold">{{ day }}</div>
-    {% endfor %}
-  </div>
-
-  <!-- Календарные недели -->
-  {% for week in calendar_weeks %}
-    <div class="row row-cols-7 border text-center">
-      {% for date in week %}
-        <div class="col border py-2" style="min-height: 80px; cursor: pointer;" onclick="loadMeals('{{ date }}')">
-          <div class="{% if date.month != month %}text-muted{% endif %}">{{ date.day }}</div>
-          {% if date in meals_by_date %}
-            <div class="badge bg-primary">{{ meals_by_date|dict_get:date|length }} приём(а)</div>
-          {% endif %}
-        </div>
+  <table class="table table-bordered text-center calendar-table">
+    <thead class="table-light">
+      <tr>
+        {% for day in weekdays %}
+          <th>{{ day }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for week in calendar_weeks %}
+        <tr>
+          {% for day in week %}
+            {% with day_str=day|date:"Y-m-d" %}
+              {% with meals=meals_by_date|get_item:day_str %}
+                <td class="{% if day.month != month %}text-muted bg-light{% endif %}" style="vertical-align: top;">
+                  <div>
+                    <strong>{{ day.day }}</strong>
+                    <a href="{% url 'add_meal' %}?date={{ day_str }}" title="Добавить приём пищи">➕</a>
+                  </div>
+                  <div onclick="loadMeals('{{ day_str }}')" style="cursor: pointer;">
+                    {% if meals %}
+                      <span class="badge bg-success">{{ meals|length }} приём(ов)</span>
+                    {% else %}
+                      <small class="text-muted">Нет приёмов</small>
+                    {% endif %}
+                  </div>
+                </td>
+              {% endwith %}
+            {% endwith %}
+          {% endfor %}
+        </tr>
       {% endfor %}
-    </div>
-  {% endfor %}
-</div>
+    </tbody>
+  </table>
 
-<!-- Модальное окно или div для отображения приёмов -->
-<div id="meal-details" class="mt-4"></div>
+  <!-- Блок для отображения подробностей -->
+  <div id="meal-details" class="mt-4">
+    <p class="text-muted">Нажмите на ячейку календаря, чтобы посмотреть приёмы пищи.</p>
+  </div>
+</div>
 
 <script>
   function loadMeals(date) {
@@ -40,13 +58,23 @@
       .then(data => {
         let container = document.getElementById("meal-details");
         if (data.length === 0) {
-          container.innerHTML = `<p>Нет приёмов пищи на ${date}.</p>`;
+          container.innerHTML = `<p>Нет приёмов пищи на <strong>${date}</strong>.</p>`;
         } else {
-          container.innerHTML = `<h4>Приёмы пищи на ${date}:</h4><ul>` +
-            data.map(meal => `<li>${meal.product_name} — ${meal.weight} г</li>`).join("") +
+          container.innerHTML = `<h5>Приёмы пищи на <strong>${date}</strong>:</h5><ul>` +
+            data.map(meal =>
+              `<li><a href="/meal/${meal.id}/">${meal.product_name} — ${meal.weight} г</a></li>`
+            ).join("") +
             "</ul>";
         }
+        container.scrollIntoView({ behavior: "smooth" });
       });
   }
 </script>
+
+<style>
+  .calendar-table td {
+    height: 100px;
+    padding: 5px;
+  }
+</style>
 {% endblock %}

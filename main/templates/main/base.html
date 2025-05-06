@@ -105,7 +105,7 @@
           <li class="nav-item"><a class="nav-link" href="{% url 'calculator' %}">🧮 Калькулятор</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'product_list' %}">📘 Справочник</a></li>
           {% if user.is_authenticated %}
-          <li class="nav-item"><a class="nav-link" href="{% url 'meal_calendar' %}">📅 Календарь</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'custom_calendar' %}">📅 Календарь</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'add_meal' %}">➕ Приём пищи</a></li>
           {% endif %}
         </ul>

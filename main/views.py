@@ -1,16 +1,21 @@
-from .models import Product
-from django.shortcuts import render, redirect
+from .models import Product, Meal
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import MealForm
-from .models import Meal
-from datetime import date
+from datetime import date, datetime, timedelta
 from django.utils import timezone
 from collections import defaultdict
 from django.contrib.auth.decorators import login_required
 import json
 from django.core.serializers.json import DjangoJSONEncoder
-import calendar
-from datetime import datetime, timedelta
 from django.http import JsonResponse
+import calendar
+from django.db.models.functions import TruncDate
+
+@login_required
+def meal_detail_view(request, pk):
+    meal = get_object_or_404(Meal, pk=pk, user=request.user)
+    return render(request, 'main/meal_detail.html', {'meal': meal})
+
 
 @login_required
 def meals_on_date(request):
@@ -20,9 +25,11 @@ def meals_on_date(request):
     except ValueError:
         return JsonResponse([], safe=False)
 
+    # Убираем TruncDate — поле date уже без времени
     meals = Meal.objects.filter(user=request.user, date=date_obj)
-    data = [{"product_name": m.product_name, "weight": m.weight} for m in meals]
+    data = [{"id": m.id, "product_name": m.product_name, "weight": m.weight} for m in meals]
     return JsonResponse(data, safe=False)
+
 
 
 @login_required
@@ -33,10 +40,17 @@ def custom_calendar_view(request):
     cal = calendar.Calendar(firstweekday=0)
     calendar_weeks = cal.monthdatescalendar(year, month)
 
-    meals = Meal.objects.filter(user=request.user, date__year=year, date__month=month)
+    # Фильтруем приёмы пищи по месяцу
+    meals = Meal.objects.filter(
+        user=request.user,
+        date__year=year,
+        date__month=month
+    )
+
+    # Группируем по дате в виде строки YYYY-MM-DD
     meals_by_date = defaultdict(list)
     for meal in meals:
-        meals_by_date[meal.date].append(meal)
+        meals_by_date[meal.date.isoformat()].append(meal)
 
     weekdays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
     context = {
@@ -48,7 +62,6 @@ def custom_calendar_view(request):
         'weekdays': weekdays,
     }
     return render(request, 'main/custom_calendar.html', context)
-
 
 
 @login_required
@@ -66,15 +79,14 @@ def meal_calendar_view(request):
     })
 
 
-# Главная страница
 def home_view(request):
     return render(request, 'main/home.html')
 
-# Страница "О проекте"
+
 def about_view(request):
     return render(request, 'main/about.html')
 
-# Калькулятор хлебных единиц
+
 def calculator_view(request):
     result = None
     products = Product.objects.all()
@@ -93,7 +105,7 @@ def calculator_view(request):
         'result': result
     })
 
-# Справочник продуктов с поиском и сортировкой
+
 def product_list_view(request):
     sort_by = request.GET.get('sort')
     query = request.GET.get('q')
@@ -110,6 +122,7 @@ def product_list_view(request):
         'products': products
     })
 
+
 @login_required
 def add_meal_view(request):
     if request.method == 'POST':
@@ -118,8 +131,8 @@ def add_meal_view(request):
             meal = form.save(commit=False)
             meal.user = request.user
 
-            # Расчёт углеводов (carbs) и ХЕ (xe)
-            meal.carbs = (meal.weight / 100) * 12  # Пример: 12 г углеводов на 100 г
+            # Расчёт углеводов и ХЕ
+            meal.carbs = (meal.weight / 100) * 12
             meal.xe = meal.carbs / 12
 
             meal.save()

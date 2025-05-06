@@ -1,0 +1,19 @@
+{% extends 'main/base.html' %}
+{% block title %}Детали приёма пищи{% endblock %}
+
+{% block content %}
+<div class="card p-4">
+  <h1 class="mb-4">🍽️ Детали приёма пищи</h1>
+
+  <ul class="list-group mb-3">
+    <li class="list-group-item"><strong>📅 Дата:</strong> {{ meal.date }}</li>
+    <li class="list-group-item"><strong>⏰ Время:</strong> {{ meal.time|default:"—" }}</li>
+    <li class="list-group-item"><strong>🥗 Продукт:</strong> {{ meal.product_name }}</li>
+    <li class="list-group-item"><strong>⚖️ Вес:</strong> {{ meal.weight }} г</li>
+    <li class="list-group-item"><strong>🥖 Углеводы:</strong> {{ meal.carbs|floatformat:1 }} г</li>
+    <li class="list-group-item"><strong>🍞 Хлебные единицы:</strong> {{ meal.xe|floatformat:2 }}</li>
+  </ul>
+
+  <a href="{% url 'custom_calendar' %}" class="btn btn-outline-secondary">← Назад</a>
+</div>
+{% endblock %}
