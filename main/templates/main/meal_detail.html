@@ -8,7 +8,7 @@
   <ul class="list-group mb-3">
     <li class="list-group-item"><strong>📅 Дата:</strong> {{ meal.date }}</li>
     <li class="list-group-item"><strong>⏰ Время:</strong> {{ meal.time|default:"—" }}</li>
-    <li class="list-group-item"><strong>🥗 Продукт:</strong> {{ meal.product_name }}</li>
+    <li class="list-group-item"><strong>🥗 Продукт:</strong> {{ meal.product.name }}</li>
     <li class="list-group-item"><strong>⚖️ Вес:</strong> {{ meal.weight }} г</li>
     <li class="list-group-item"><strong>🥖 Углеводы:</strong> {{ meal.carbs|floatformat:1 }} г</li>
     <li class="list-group-item"><strong>🍞 Хлебные единицы:</strong> {{ meal.xe|floatformat:2 }}</li>

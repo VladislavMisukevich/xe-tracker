@@ -102,6 +102,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+STATIC_URL = '/static/'
+
+# Путь к папке, где лежат твои статические файлы (CSS, JS, видео и т.д.)
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  # если у тебя есть папка /static рядом с manage.py
+]
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
@@ -118,7 +125,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

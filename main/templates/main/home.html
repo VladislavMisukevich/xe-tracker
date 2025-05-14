@@ -1,22 +1,72 @@
-{% extends "main/base.html" %}
-{% block title %}Главная{% endblock %}
+{% extends 'main/base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="card p-5 shadow-sm text-center">
-    <h1 class="mb-4">🍎 Добро пожаловать в XE-Калькулятор</h1>
-
-    <p class="lead mb-4">
-        Наш сервис помогает людям с диабетом <strong>удобно рассчитывать хлебные единицы</strong> и
-        <strong>определять дозу инсулина</strong> по потреблённым продуктам.
-    </p>
-
-    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-        <a href="{% url 'calculator' %}" class="btn btn-primary btn-lg px-4">
-            🧮 Калькулятор
-        </a>
-        <a href="{% url 'product_list' %}" class="btn btn-outline-secondary btn-lg px-4">
-            📘 Справочник продуктов
-        </a>
-    </div>
+<div class="video-wrapper">
+  <video autoplay muted loop playsinline>
+    <source src="{% static 'main/videos/background.mp4' %}" type="video/mp4">
+    Ваш браузер не поддерживает видео.
+  </video>
+  <div class="video-overlay">
+    <h1 class="display-4 text-white animate__animated animate__fadeInDown">Добро пожаловать!</h1>
+    <p class="lead text-white animate__animated animate__fadeInUp">Контроль питания и здоровья — просто и стильно.</p>
+    <a href="{% url 'calculator' %}" class="btn btn-light mt-3 animate__animated animate__fadeInUp">Калькулятор ХЕ</a>
+  </div>
 </div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .container {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100%;
+  }
+
+  .video-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    z-index: -1;
+  }
+
+  .video-wrapper video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    z-index: -1;
+    filter: brightness(0.4);
+  }
+
+  .video-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    z-index: 10; /* Увеличил */
+    padding: 0 20px;
+    pointer-events: auto; /* ВАЖНО */
+  }
+  body {
+    position: relative;
+    z-index: 0;
+  }
+
+</style>
 {% endblock %}

@@ -27,15 +27,34 @@ def meals_on_date(request):
 
     # Убираем TruncDate — поле date уже без времени
     meals = Meal.objects.filter(user=request.user, date=date_obj)
-    data = [{"id": m.id, "product_name": m.product_name, "weight": m.weight} for m in meals]
+    data = [{"id": m.id, "product_name": m.product.name, "weight": m.weight} for m in meals]
     return JsonResponse(data, safe=False)
 
 
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from datetime import datetime
+import calendar
+from collections import defaultdict
+from .models import Meal
+
 @login_required
 def custom_calendar_view(request):
-    year = int(request.GET.get('year', datetime.now().year))
-    month = int(request.GET.get('month', datetime.now().month))
+    try:
+        year = int(request.GET.get('year', datetime.now().year))
+        month = int(request.GET.get('month', datetime.now().month))
+    except ValueError:
+        year = datetime.now().year
+        month = datetime.now().month
+
+    # Корректировка месяца и года
+    if month < 1:
+        month = 12
+        year -= 1
+    elif month > 12:
+        month = 1
+        year += 1
 
     cal = calendar.Calendar(firstweekday=0)
     calendar_weeks = cal.monthdatescalendar(year, month)
@@ -47,12 +66,13 @@ def custom_calendar_view(request):
         date__month=month
     )
 
-    # Группируем по дате в виде строки YYYY-MM-DD
+    # Группируем по дате
     meals_by_date = defaultdict(list)
     for meal in meals:
         meals_by_date[meal.date.isoformat()].append(meal)
 
     weekdays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
+
     context = {
         'year': year,
         'month': month,
@@ -96,7 +116,7 @@ def calculator_view(request):
         try:
             weight = float(request.GET['weight'])
             product = Product.objects.get(name__iexact=name)
-            result = round((product.carbs_per_100g * weight) / 1000, 2)
+            result = round(product.carbs_per_100g * weight / 1000, 2)
         except (ValueError, Product.DoesNotExist):
             result = "Продукт не найден"
 
@@ -125,19 +145,20 @@ def product_list_view(request):
 
 @login_required
 def add_meal_view(request):
+    initial_date = request.GET.get('date')
+
     if request.method == 'POST':
         form = MealForm(request.POST)
         if form.is_valid():
             meal = form.save(commit=False)
             meal.user = request.user
-
-            # Расчёт углеводов и ХЕ
-            meal.carbs = (meal.weight / 100) * 12
-            meal.xe = meal.carbs / 12
-
+            if meal.product and meal.weight:
+                meal.carbs = round((meal.product.carbs_per_100g * meal.weight) / 100, 2)
+                meal.xe = round((meal.product.carbs_per_100g * meal.weight) / 1000, 2)
             meal.save()
-            return redirect('meal_calendar')
+            return redirect('custom_calendar')
     else:
-        form = MealForm()
+        form = MealForm(initial={'date': initial_date})
 
     return render(request, 'main/add_meal.html', {'form': form})
+

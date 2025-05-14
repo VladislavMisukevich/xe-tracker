@@ -6,7 +6,14 @@
   <h1 class="mb-4">🍽️ Добавить приём пищи</h1>
   <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    {% for field in form %}
+      <div class="mb-3">
+        {{ field.label_tag }} {{ field }}
+        {% if field.errors %}
+          <div class="text-danger">{{ field.errors }}</div>
+        {% endif %}
+      </div>
+    {% endfor %}
     <button type="submit" class="btn btn-primary">Сохранить</button>
     <a href="{% url 'custom_calendar' %}" class="btn btn-outline-secondary ms-2">Назад</a>
   </form>
