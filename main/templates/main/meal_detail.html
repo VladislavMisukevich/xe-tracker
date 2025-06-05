@@ -14,6 +14,13 @@
     <li class="list-group-item"><strong>🍞 Хлебные единицы:</strong> {{ meal.xe|floatformat:2 }}</li>
   </ul>
 
-  <a href="{% url 'custom_calendar' %}" class="btn btn-outline-secondary">← Назад</a>
+  <div class="d-flex justify-content-between">
+    <a href="{% url 'custom_calendar' %}" class="btn btn-outline-secondary">← Назад</a>
+
+    <form method="post" action="{% url 'delete_meal' meal.pk %}" onsubmit="return confirm('Удалить этот приём пищи?');">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">🗑️ Удалить</button>
+    </form>
+  </div>
 </div>
 {% endblock %}

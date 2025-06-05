@@ -27,14 +27,30 @@
                 <td class="{% if day.month != month %}text-muted bg-light{% endif %}" style="vertical-align: top;">
                   <div>
                     <strong>{{ day.day }}</strong>
-                    <a href="{% url 'add_meal' %}?date={{ day_str }}" title="Добавить приём пищи">➕</a>
+                    <a href="{% url 'add_meal' %}?date={{ day_str }}" class="calendar-plus" title="Добавить приём пищи">➕</a>
                   </div>
+
                   <div onclick="loadMeals('{{ day_str }}')" style="cursor: pointer;">
-                    {% if meals %}
-                      <span class="badge bg-success">{{ meals|length }} приём(ов)</span>
-                    {% else %}
-                      <small class="text-muted">Нет приёмов</small>
-                    {% endif %}
+                    <div class="d-flex flex-column align-items-center mt-2">
+                      {% if meals %}
+                        <div class="badge bg-success mb-1">
+                          {{ meals|length }} приём(ов)
+                        </div>
+                      {% endif %}
+                      {% with xe=xe_by_date|get_item:day_str %}
+                        {% if xe %}
+                          {% if xe > daily_xe_norm %}
+                            <div class="badge bg-danger">
+                              {{ xe|floatformat:2 }}/{{ daily_xe_norm|floatformat:2 }} ХЕ
+                            </div>
+                          {% else %}
+                            <div class="badge bg-info text-dark">
+                              {{ xe|floatformat:2 }}/{{ daily_xe_norm|floatformat:2 }} ХЕ
+                            </div>
+                          {% endif %}
+                        {% endif %}
+                      {% endwith %}
+                    </div>
                   </div>
                 </td>
               {% endwith %}
@@ -45,13 +61,76 @@
     </tbody>
   </table>
 
+  <!-- График ХЕ -->
+  <div class="mt-4">
+    <h5 class="text-center">График съеденных ХЕ по дням</h5>
+    <canvas id="xeChart" width="100%" height="50"></canvas>
+  </div>
+
   <!-- Блок для отображения подробностей -->
   <div id="meal-details" class="mt-4">
     <p class="text-muted">Нажмите на ячейку календаря, чтобы посмотреть приёмы пищи.</p>
   </div>
 </div>
 
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
+  const xeData = {
+    labels: {{ day_labels|safe }}, // ['1', '2', ..., '31']
+    datasets: [{
+      label: 'Съедено ХЕ',
+      data: {{ xe_values|safe }},  // [2.5, 3.0, 0, ...]
+      backgroundColor: 'rgba(54, 162, 235, 0.5)',
+      borderColor: 'rgba(54, 162, 235, 1)',
+      borderWidth: 2,
+      fill: true,
+      tension: 0.2
+    },
+    {
+      label: 'Норма ХЕ',
+      data: Array({{ day_labels|length }}).fill({{ daily_xe_norm|floatformat:2 }}),
+      borderColor: 'rgba(255, 99, 132, 1)',
+      borderWidth: 2,
+      borderDash: [5, 5],
+      fill: false
+    }]
+  };
+
+  const ctx = document.getElementById('xeChart').getContext('2d');
+  const xeChart = new Chart(ctx, {
+    type: 'line',
+    data: xeData,
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'ХЕ'
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: 'Дни месяца'
+          }
+        }
+      }
+    }
+  });
+
   function loadMeals(date) {
     fetch(`/api/meals/?date=${date}`)
       .then(response => response.json())
@@ -75,6 +154,11 @@
   .calendar-table td {
     height: 100px;
     padding: 5px;
+    border-bottom: none !important;
+  }
+
+  .calendar-plus {
+    text-decoration: none;
   }
 </style>
 {% endblock %}

@@ -2,10 +2,13 @@ from django import forms
 from .models import Meal, Product
 
 class MealForm(forms.ModelForm):
-    product = forms.ModelChoiceField(
-        queryset=Product.objects.all(),
+    product = forms.CharField(
         label='Продукт',
-        widget=forms.Select(attrs={'class': 'form-control'})
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'list': 'product-list',
+            'autocomplete': 'off',
+        })
     )
 
     class Meta:
@@ -21,3 +24,10 @@ class MealForm(forms.ModelForm):
             'time': 'Время',
             'weight': 'Вес (г)',
         }
+
+    def clean_product(self):
+        name = self.cleaned_data['product']
+        try:
+            return Product.objects.get(name__iexact=name)
+        except Product.DoesNotExist:
+            raise forms.ValidationError("Такой продукт не найден. Пожалуйста, выберите из списка.")

@@ -3,12 +3,13 @@
 
 {% block content %}
 <div class="card p-4 shadow-sm">
-    <h1 class="mb-4"><i class="bi bi-calculator"></i> Калькулятор хлебных единиц</h1>
+    <h1 class="mb-2"><i class="bi bi-calculator"></i> Калькулятор ХЕ</h1>
+    <p class="text-muted mb-4">Узнай, сколько хлебных единиц в любом продукте — быстро и удобно!</p>
 
     <form method="get" class="row g-3">
         <div class="col-md-6">
-            <label for="product" class="form-label">Продукт:</label>
-            <input type="text" id="product" name="product" required class="form-control" list="products">
+            <label for="product" class="form-label">🍎 Продукт:</label>
+            <input type="text" id="product" name="product" required class="form-control form-control-lg" list="products" placeholder="например, яблоко" autofocus>
             <datalist id="products">
                 {% for product in products %}
                     <option value="{{ product.name }}">
@@ -16,27 +17,52 @@
             </datalist>
         </div>
         <div class="col-md-6">
-            <label for="weight" class="form-label">Вес (в граммах):</label>
-            <input type="number" id="weight" name="weight" min="1" required class="form-control">
+            <label for="weight" class="form-label">⚖️ Вес (в граммах):</label>
+            <input type="number" id="weight" name="weight" min="1" required class="form-control form-control-lg" placeholder="например, 120">
         </div>
-        <div class="col-12">
-            <button type="submit" class="btn btn-primary">
-                <i class="bi bi-play-fill"></i> Рассчитать
+        <div class="col-12 d-grid d-md-block">
+            <button type="submit" class="btn btn-primary btn-lg mt-2">
+                🧮 Рассчитать
             </button>
         </div>
     </form>
 
     {% if result is not None %}
-        <div class="alert alert-info mt-4">
+        <div class="alert alert-success mt-4 shadow-sm rounded">
             <i class="bi bi-check-circle-fill me-2"></i>
             <strong>Результат:</strong> {{ result }} ХЕ
         </div>
     {% endif %}
 
-    <div class="mt-3">
+    <div class="mt-4">
         <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">
             📘 Перейти к справочнику продуктов
         </a>
+        <a href="{% url 'add_product' %}" class="btn btn-outline-primary mb-3">
+            + Добавить продукт
+        </a>
     </div>
+
+    <p class="text-muted small mt-3">
+        ℹ️ 1 ХЕ ≈ 10–12 г углеводов. Вес указывается в граммах.
+    </p>
 </div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    .form-control-lg {
+        border-radius: 12px;
+    }
+    .btn-lg {
+        border-radius: 50px;
+        transition: transform 0.2s ease;
+    }
+    .btn-lg:hover {
+        transform: scale(1.05);
+    }
+    .alert {
+        font-size: 1.1rem;
+    }
+</style>
 {% endblock %}

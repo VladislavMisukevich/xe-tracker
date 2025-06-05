@@ -89,6 +89,22 @@
       font-size: 20px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     }
+    html {
+      overflow-y: scroll; /* всегда показывать вертикальную прокрутку */
+    }
+    .article-content h2, .article-content h3 {
+      margin-top: 1.5rem;
+    }
+    .article-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 6px;
+      margin: 1rem 0;
+    }
+    .article-content p {
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
   </style>
   {% block extra_head %}{% endblock %}
 </head>
@@ -106,6 +122,7 @@
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item"><a class="nav-link" href="{% url 'calculator' %}">🧮 Калькулятор</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'product_list' %}">📘 Справочник</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'article_list' %}">📚 Статьи</a></li>
           {% if user.is_authenticated %}
           <li class="nav-item"><a class="nav-link" href="{% url 'custom_calendar' %}">📅 Календарь</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'add_meal' %}">➕ Приём пищи</a></li>
@@ -148,6 +165,7 @@
     };
     scrollBtn.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
   </script>
-  {% block extra_scripts %}{% endblock %}
+  {% block extra_js %} {% endblock %}
+
 </body>
 </html>

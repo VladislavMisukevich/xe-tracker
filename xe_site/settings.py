@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-e(k=(14r(o*nk986q_1p#!@o)348ic&s&gkdva2g^23ph2c$4w
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.loca.lt']
 LOGIN_REDIRECT_URL = 'profile'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main',
     'accounts',
+    'django_ckeditor_5',
+
 ]
 
 MIDDLEWARE = [
@@ -130,3 +132,22 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+AUTH_USER_MODEL = 'accounts.CustomUser'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+CKEDITOR_5_CUSTOM_CSS = 'ckeditor5/custom.css'  # необязательно — можно задать стили
+
+CKEDITOR_5_CONFIGS = {
+    'default': {
+        'toolbar': [
+            'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|',
+            'outdent', 'indent', '|', 'blockQuote', 'insertTable', 'imageUpload', '|',
+            'undo', 'redo'
+        ],
+        'language': 'ru',
+    },
+}
+CKEDITOR_5_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+
+CKEDITOR_5_UPLOAD_PLUGIN = "image"
